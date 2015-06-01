@@ -1,4 +1,4 @@
-(ns iris-example-req-resp.common
+(ns iris-examples.common
   (:require [cognitect.transit :as transit]
             [clojure.tools.cli :as cli])
   (:import [java.io ByteArrayOutputStream ByteArrayInputStream]))

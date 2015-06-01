@@ -1,5 +1,5 @@
-(ns iris-example-req-resp.service
-  (:require [iris-example-req-resp.common :as common]
+(ns iris-examples.req-resp.service
+  (:require [iris-examples.common :as common]
             [clojure.tools.logging :as log])
   (:import [com.karalabe.iris Connection ServiceHandler Service]
            [com.karalabe.iris.exceptions RemoteException]))

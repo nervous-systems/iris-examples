@@ -1,8 +1,7 @@
-(ns iris-example-req-resp.client
-  (:require [iris-example-req-resp.common :as common]
+(ns iris-examples.req-resp.client
+  (:require [iris-examples.common :as common]
             [clojure.tools.logging :as log])
-  (:import [com.karalabe.iris Connection]
-           [com.karalabe.iris.exceptions RemoteException]))
+  (:import [com.karalabe.iris Connection]))
 
 (defn random-request []
   (let [cmd (rand-nth [:random :shift :super-invalid])]
@@ -22,7 +21,7 @@
     (let [resp (.request conn "bit-service" (common/pack-message req) 1000)]
       (log-response req resp)
       true)
-    (catch RemoteException e
+    (catch Exception e
       (log-response-error req e))))
 
 (defn -main [& args]
