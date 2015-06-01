@@ -11,16 +11,23 @@
                             :number (rand-int 10)
                             :places (rand-int 10)}))))
 
+(defn log-response [req resp]
+  (log/info "Received response:" req "=>" (common/unpack-message resp)))
+
+(defn log-response-error [req e]
+  (log/warn "Oops, received error:" req "=>" (.getMessage e)))
+
 (defn make-noisy-request! [conn req]
   (try
     (let [resp (.request conn "bit-service" (common/pack-message req) 1000)]
-      (log/info "Received response:" req "=>" (common/unpack-message resp))
+      (log-response req resp)
       true)
     (catch RemoteException e
-      (log/warn "Oops, received error:" req "=>" (.getMessage e)))))
+      (log-response-error req e))))
 
-(defn -main []
-  (let [conn (Connection. 55555)]
-    (doseq [req (repeatedly random-request)]
-      (when-not (make-noisy-request! conn req)
-        (System/exit 1)))))
+(defn -main [& args]
+  (let [conn (Connection. (common/cli-args->port args))]
+    (loop [req (random-request)]
+      (if (make-noisy-request! conn req)
+        (recur (random-request))
+        (.close conn)))))

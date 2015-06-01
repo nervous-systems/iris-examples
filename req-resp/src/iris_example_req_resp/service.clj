@@ -17,12 +17,11 @@
     :right (bit-shift-right number places)))
 
 (defn log-message [m]
-  (log/info "Received bit-service message:" (pr-str m))
+  (log/info "Received bit-service message:" m)
   m)
 
-(defn create-handler [drop-latch]
+(defn create-handler []
   (reify ServiceHandler
-
     (handleRequest [_ byte-array]
       (try
         (-> byte-array
@@ -31,12 +30,9 @@
             bit-command
             common/pack-message)
         (catch Exception e
-          (throw (RemoteException. (.getMessage e) e)))))
+          (throw (RemoteException. (.getMessage e) e)))))))
 
-    (handleDrop [_ reason]
-      (deliver drop-latch true))))
-
-(defn -main []
-  (let [drop-latch (promise)
-        service (Service. 55555 "bit-service" (create-handler drop-latch))]
-    @drop-latch))
+(defn -main [& args]
+  (Service. (common/cli-args->port args)
+            "bit-service"
+            (create-handler)))

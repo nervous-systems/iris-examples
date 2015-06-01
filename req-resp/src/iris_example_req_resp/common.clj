@@ -1,5 +1,6 @@
 (ns iris-example-req-resp.common
-  (:require [cognitect.transit :as transit])
+  (:require [cognitect.transit :as transit]
+            [clojure.tools.cli :as cli])
   (:import [java.io ByteArrayOutputStream ByteArrayInputStream]))
 
 (defn pack-message [m]
@@ -12,3 +13,11 @@
 (defn unpack-message [byte-array]
   (let [i (ByteArrayInputStream. byte-array)]
     (transit/read (transit/reader i :msgpack))))
+
+(def port-cli-options
+  [["-p" "--port N" "Port number"
+    :default 55555
+    :parse-fn #(Integer/parseInt %)]])
+
+(defn cli-args->port [cli-args]
+  (-> cli-args (cli/parse-opts port-cli-options) :options :port))
