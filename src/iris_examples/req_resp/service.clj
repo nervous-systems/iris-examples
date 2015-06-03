@@ -34,5 +34,5 @@
 
 (defn -main [& args]
   (Service. (common/cli-args->port args)
-            "bit-service"
+            common/bit-service
             (create-handler)))

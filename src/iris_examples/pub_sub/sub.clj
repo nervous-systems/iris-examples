@@ -27,5 +27,5 @@
         chan (async/chan)]
     (consume-loop chan)
     (.subscribe conn
-                "iris-examples/pub-sub/events"
+                common/topic
                 (create-topic-handler chan))))

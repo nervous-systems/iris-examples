@@ -3,6 +3,9 @@
             [clojure.tools.cli :as cli])
   (:import [java.io ByteArrayOutputStream ByteArrayInputStream]))
 
+(def ^:const topic "iris-examples/pub-sub/events")
+(def ^:const bit-service "bit-service")
+
 (defn pack-message [m]
   (let [o (ByteArrayOutputStream.)]
     (transit/write (transit/writer o :msgpack) m)
@@ -30,3 +33,8 @@
 
 (defn cli-args->port [cli-args]
   (-> cli-args (cli/parse-opts port-cli-options) :options :port))
+
+(defn generate-event [i]
+  {:event :integer
+   :data {:value i}
+   :time (System/currentTimeMillis)})

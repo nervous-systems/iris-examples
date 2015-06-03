@@ -18,8 +18,10 @@
 
 (defn make-noisy-request! [conn req]
   (try
-    (let [resp (.request conn "bit-service"
-                         (common/pack-message req) 1000)]
+    (let [resp (.request
+                conn
+                common/bit-service
+                (common/pack-message req) 1000)]
       (log-response req resp)
       true)
     (catch Exception e
