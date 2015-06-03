@@ -4,14 +4,14 @@
   (:import [com.karalabe.iris Connection ServiceHandler Service]
            [com.karalabe.iris.exceptions RemoteException]))
 
-(defmulti  bit-command :command)
-(defmethod bit-command :default [_]
+(defmulti  bit-service :command)
+(defmethod bit-service :default [_]
   (throw (Exception. "Unknown command!")))
 
-(defmethod bit-command :random [_]
+(defmethod bit-service :random [_]
   (rand-int 2))
 
-(defmethod bit-command :shift [{:keys [number places direction]}]
+(defmethod bit-service :shift [{:keys [number places direction]}]
   (case direction
     :left  (bit-shift-left  number places)
     :right (bit-shift-right number places)))
@@ -27,7 +27,7 @@
         (-> byte-array
             common/unpack-message
             log-message
-            bit-command
+            bit-service
             common/pack-message)
         (catch Exception e
           (throw (RemoteException. (.getMessage e) e)))))))

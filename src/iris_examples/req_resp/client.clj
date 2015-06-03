@@ -18,15 +18,17 @@
 
 (defn make-noisy-request! [conn req]
   (try
-    (let [resp (.request conn "bit-service" (common/pack-message req) 1000)]
+    (let [resp (.request conn "bit-service"
+                         (common/pack-message req) 1000)]
       (log-response req resp)
       true)
     (catch Exception e
-      (log-response-error req e))))
+      (log-response-error req e)
+      nil)))
 
 (defn -main [& args]
   (let [conn (Connection. (common/cli-args->port args))]
-    (loop [req (random-request)]
-      (if (make-noisy-request! conn req)
-        (recur (random-request))
+    (loop []
+      (if (make-noisy-request! conn (random-request))
+        (recur ())
         (.close conn)))))

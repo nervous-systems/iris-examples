@@ -1,7 +1,7 @@
 (defproject io.nervous/iris-examples "0.1.0-SNAPSHOT"
   :aot [iris-examples.req-resp.service
         iris-examples.req-resp.client]
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.7.0-RC1"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/tools.cli "0.3.1"]
                  [org.clojure/tools.logging "0.3.1"]
