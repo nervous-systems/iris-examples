@@ -14,15 +14,16 @@
          msg)
         (recur)))))
 
-(defn generate-event []
-  {:event :random-bit
-   :data {:value (rand-int 2)}
+(defn generate-event [i]
+  {:event :integer
+   :data {:value i}
    :time (System/currentTimeMillis)})
 
 (defn -main [& args]
-  (let [conn (Connection. (common/cli-args->port args))
-        chan (async/chan)]
+  (let [chan  (async/chan)
+        limit (common/cli-args->int args Long/MAX_VALUE)
+        conn  (Connection. (common/cli-args->port args))]
     (publish-loop conn chan)
-    (loop []
-      (async/>!! chan (generate-event))
-      (recur))))
+    (dotimes [i limit]
+      (async/>!! chan (generate-event i)))
+    (.close conn)))

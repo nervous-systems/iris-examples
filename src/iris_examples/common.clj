@@ -19,5 +19,14 @@
     :default 55555
     :parse-fn #(Integer/parseInt %)]])
 
+(defn cli-args->int [cli-args default]
+  (-> cli-args
+      (cli/parse-opts
+       [["-n" "--number N" nil
+         :default default
+         :parse-fn #(Integer/parseInt %)]])
+      :options
+      :number))
+
 (defn cli-args->port [cli-args]
   (-> cli-args (cli/parse-opts port-cli-options) :options :port))
