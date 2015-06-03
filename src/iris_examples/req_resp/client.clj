@@ -30,5 +30,5 @@
   (let [conn (Connection. (common/cli-args->port args))]
     (loop []
       (if (make-noisy-request! conn (random-request))
-        (recur ())
+        (recur)
         (.close conn)))))
