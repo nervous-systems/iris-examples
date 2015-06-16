@@ -58,13 +58,14 @@
       (<! (async/timeout 500))
       (recur (not echo)))))
 
-(defn echo-server [chan conn]
+
+(defn echo-server [chan tunnel!]
   (async/go-loop [last-value nil]
     (when-let [[command value :as op] (<! chan)]
       (case command
         :last (>! chan [:last last-value])
         :echo (if (zero? (rand-int 2))
-                (let [proxy-chan (<! (tunnel! conn))]
+                (let [proxy-chan (<! (tunnel!))]
                   (>! proxy-chan [:echo op])
                   (>! chan (<! proxy-chan))
                   (async/close! proxy-chan))
@@ -75,5 +76,5 @@
   (let [port (common/cli-args->port args)
         conn {:connection (Connection. port) :service "echo-service"}]
     (Service. port "echo-service"
-              (create-handler #(echo-server % conn)))
+              (create-handler #(echo-server % (partial tunnel! conn))))
     (echo-client (tunnel!! conn))))
