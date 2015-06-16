@@ -19,8 +19,8 @@
 (defn close! [^Tunnel tunnel]
   (.close tunnel))
 
-(defn tunnel-wrapper [read-or-write tunnel]
-  (let [chan (async/chan)]
+(defn tunnel-wrapper [read-or-write tunnel & [{:keys [chan]}]]
+  (let [chan (or chan (async/chan))]
     (async/thread
       (when (or (= read-or-write :write)
                 (some->> tunnel receive!! (>!! chan)))
@@ -34,12 +34,15 @@
         (async/close! chan)))
     chan))
 
-(defn tunnel!! [{:keys [service connection timeout] :or {timeout 1000}}]
-  (->> (.tunnel connection service timeout)
-       (tunnel-wrapper :write)))
+(defn tunnel!!
+  [{:keys [service connection timeout] :or {timeout 1000}} & [opts]]
+  (let [tunnel (.tunnel connection service timeout)]
+    (tunnel-wrapper :write tunnel opts)))
 
 (defn tunnel! [conn]
-  (async/thread-call #(tunnel!! conn)))
+  (let [chan (async/chan)]
+    (async/thread-call #(tunnel!! conn {:chan chan}))
+    chan))
 
 (defn create-handler [tunnel-callback]
   (reify ServiceHandler
@@ -65,10 +68,9 @@
       (case command
         :last (>! chan [:last last-value])
         :echo (if (zero? (rand-int 2))
-                (let [proxy-chan (<! (tunnel!))]
+                (let [proxy-chan (tunnel!)]
                   (>! proxy-chan [:echo op])
-                  (>! chan (<! proxy-chan))
-                  (async/close! proxy-chan))
+                  (async/pipe proxy-chan chan))
                 (>! chan op)))
       (recur value))))
 
