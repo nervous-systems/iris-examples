@@ -46,7 +46,7 @@
     (handleTunnel [_ tunnel]
       (tunnel-callback (tunnel-wrapper :read tunnel)))))
 
-(defn echo-client [chan]
+(defn echo-client! [chan]
   (async/go-loop [echo true]
     (let [op (if echo
                [:echo (gen/anything)]
@@ -59,7 +59,7 @@
       (recur (not echo)))))
 
 
-(defn echo-server [chan tunnel!]
+(defn echo-server! [chan tunnel!]
   (async/go-loop [last-value nil]
     (when-let [[command value :as op] (<! chan)]
       (case command
@@ -76,5 +76,5 @@
   (let [port (common/cli-args->port args)
         conn {:connection (Connection. port) :service "echo-service"}]
     (Service. port "echo-service"
-              (create-handler #(echo-server % (partial tunnel! conn))))
-    (echo-client (tunnel!! conn))))
+              (create-handler #(echo-server! % (partial tunnel! conn))))
+    (echo-client! (tunnel!! conn))))
