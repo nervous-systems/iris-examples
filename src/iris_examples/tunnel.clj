@@ -34,9 +34,8 @@
         (async/close! chan)))
     chan))
 
-(defn tunnel!!
-  [{:keys [service connection timeout] :or {timeout 1000}} & [opts]]
-  (let [tunnel (.tunnel connection service timeout)]
+(defn tunnel!! [^Connection conn & [opts]]
+  (let [tunnel (.tunnel conn "echo-service" 1000)]
     (tunnel-wrapper :write tunnel opts)))
 
 (defn tunnel! [conn]
@@ -76,7 +75,7 @@
 
 (defn -main [& args]
   (let [port (common/cli-args->port args)
-        conn {:connection (Connection. port) :service "echo-service"}]
+        conn (Connection. port)]
     (Service. port "echo-service"
               (create-handler #(echo-server! % (partial tunnel! conn))))
     (echo-client! (tunnel!! conn))))
