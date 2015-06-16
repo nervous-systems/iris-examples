@@ -7,5 +7,5 @@
   (let [conn (Connection. (common/cli-args->port args))]
     (dotimes [i (common/cli-args->int args Long/MAX_VALUE)]
       (let [msg (-> i common/generate-event common/pack-message)]
-       (.broadcast conn common/bit-service msg)))
+        (.broadcast conn common/bit-service msg)))
     (.close conn)))
