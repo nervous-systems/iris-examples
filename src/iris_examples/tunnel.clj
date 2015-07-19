@@ -69,7 +69,8 @@
         :echo (if (zero? (rand-int 2))
                 (let [proxy-chan (tunnel!)]
                   (>! proxy-chan [:echo op])
-                  (async/pipe proxy-chan chan))
+                  (>! chan (<! proxy-chan))
+                  (async/close! proxy-chan))
                 (>! chan op)))
       (recur value))))
 
