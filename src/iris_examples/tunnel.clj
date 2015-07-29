@@ -60,7 +60,6 @@
       (<! (async/timeout 500))
       (recur (not echo)))))
 
-
 (defn echo-server! [chan tunnel!]
   (async/go-loop [last-value nil]
     (when-let [[command value :as op] (<! chan)]
