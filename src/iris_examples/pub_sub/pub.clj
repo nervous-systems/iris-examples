@@ -4,9 +4,7 @@
   (:import [com.karalabe.iris Connection]))
 
 (defn publish [& [{:keys [port reps] :or {port 55555 reps 1}}]]
-  (let [chan  (async/chan)
-        conn  (Connection. port)]
-    (publish-loop conn chan)
+  (let [conn (Connection. port)]
     (dotimes [i reps]
       (->> i
            common/generate-event
