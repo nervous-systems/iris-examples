@@ -9,8 +9,9 @@
 (defn pack-message [m]
   (let [o (ByteArrayOutputStream.)]
     (transit/write (transit/writer o :msgpack) m)
-    (doto (.toByteArray o)
-      (.reset))))
+    (let [result (.toByteArray o)]
+      (.reset o)
+      result)))
 
 (defn unpack-message [byte-array]
   (let [i (ByteArrayInputStream. byte-array)]

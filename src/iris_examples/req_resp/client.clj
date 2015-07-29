@@ -30,7 +30,7 @@
 
 (defn -main [& args]
   (let [conn (Connection. (common/cli-args->port args))]
-    (loop []
-      (if (make-noisy-request! conn (random-request))
-        (recur)
+    (loop [i (common/cli-args->int args Long/MAX_VALUE)]
+      (if (and (pos? i) (make-noisy-request! conn (random-request)))
+        (recur (dec i))
         (.close conn)))))

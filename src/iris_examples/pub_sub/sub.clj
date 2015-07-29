@@ -19,13 +19,14 @@
 
 (defn consume-loop [chan]
   (async/go-loop []
-    (log/info "Consumed:" (async/<! chan))
-    (recur)))
+    (when-let [val (async/<! chan)]
+      (log/info "Consumed:" val)
+      (recur))))
 
 (defn -main [& args]
   (let [conn (Connection. (common/cli-args->port args))
         chan (async/chan)]
-    (consume-loop chan)
     (.subscribe conn
                 common/topic
-                (create-topic-handler chan))))
+                (create-topic-handler chan))
+    (consume-loop chan)))
