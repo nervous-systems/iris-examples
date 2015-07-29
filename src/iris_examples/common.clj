@@ -3,15 +3,14 @@
             [clojure.tools.cli :as cli])
   (:import [java.io ByteArrayOutputStream ByteArrayInputStream]))
 
-(def ^:const topic "iris-examples/pub-sub/events")
-(def ^:const bit-service "bit-service")
+(def topic "iris-examples/pub-sub/events")
+(def bit-service "bit-service")
 
 (defn pack-message [m]
   (let [o (ByteArrayOutputStream.)]
     (transit/write (transit/writer o :msgpack) m)
-    (let [result (.toByteArray o)]
-      (.reset o)
-      result)))
+    (doto (.toByteArray o)
+      (.reset))))
 
 (defn unpack-message [byte-array]
   (let [i (ByteArrayInputStream. byte-array)]
